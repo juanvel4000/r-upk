@@ -27,7 +27,7 @@ def parsemanifest(file):
             dictionary[option] = config['Package'][option]
     return dictionary
 
-def add_entry(root):
+def add_entry(name, version, root="/"):
     if not os.path.isdir(f'{root}/etc/rupk'):
         os.makedirs(f'{root}/etc/rupk')
     with open(f'{root}/etc/rupk/packages.db', 'a') as db:

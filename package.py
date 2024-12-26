@@ -3,6 +3,8 @@ import os
 import dataread
 def create_package(workdir):
     try:
+        if os.path.isdir(f'{workdir}/RUPK-OUTPUT'):
+            os.rmdir(f'{workdir}/RUPK-OUTPUT')
         cdir = os.getcwd()
         if not os.path.isdir(workdir):
             print("Error: the Working directory doesnt exist")
@@ -55,11 +57,17 @@ def create_package(workdir):
                 txz.add(manifest['Uninstall'])
         os.chdir(workdir)
         with tarfile.open(f'{workdir}/RUPK-OUTPUT/data.tar.xz', 'w|xz') as txz:
-            for line in f'{workdir}/RUPK/tree':
-                    file_path = line.strip()
-                    
-                    if os.path.isfile(file_path):
-                        txz.add(file_path, arcname=os.path.basename(file_path))
+            for root, dirs, files in os.walk(workdir):
+                if 'RUPK' in dirs:
+                    dirs.remove('RUPK')
+                if 'RUPK-OUTPUT' in dirs:
+                    dirs.remove('RUPK-OUTPUT')
+                if files:
+                    for file in files:
+                        full_path = os.path.join(root, file)
+                        if full_path.startswith(workdir):
+                            full_path = full_path[len(workdir):]  
+                        txz.add(f'{workdir}/{full_path}', arcname=full_path)
         os.chdir(f'{workdir}/RUPK-OUTPUT')
         with tarfile.open(f'{cdir}/{manifest['Name']}-{manifest['Version']}.rupk', 'w|xz') as txz:
             txz.add(f'{workdir}/RUPK-OUTPUT/data.tar.xz', arcname="data.txz")
@@ -72,4 +80,32 @@ def create_package(workdir):
         return True
     except Exception as e:
         print(f"Error: {e}")
-create_package('package/')
+def filtar(tarinfo):
+    return tarinfo
+def extract_package(outputdir, file):
+    try:
+        print(f"Preparing to extract {file}...")
+        if not os.path.isfile(file):
+            print(f"The provided file doesn't appear to be a R-UPK Package")
+            return False
+        if not os.path.isdir(outputdir):
+            os.makedirs(outputdir)
+        outputdir = os.path.abspath(outputdir)
+        file = os.path.abspath(file)
+        
+        with tarfile.open(file, 'r|xz') as txz:
+            txz.extractall(path=outputdir, filter=filtar)
+        
+        with tarfile.open(f'{outputdir}/data.txz', 'r|xz') as txz:
+            txz.extractall(path=outputdir, filter=filtar)
+        
+        with tarfile.open(f"{outputdir}/info.txz", 'r|xz') as txz:
+            txz.extractall(path=f"{outputdir}/RUPK", filter=filtar)
+        
+        os.remove(f'{outputdir}/data.txz')
+        os.remove(f"{outputdir}/info.txz")
+        
+        print(f"Extraction completed.")
+        return True
+    except Exception as e:
+        print(f"Error: {e}")
