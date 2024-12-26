@@ -63,6 +63,7 @@ def checknetpkg(root, name):
 def listall(root):
     if not os.path.isdir(f'{root}/etc/rupk/repos.d/'):
         updaterepos(root)
+    availablepkg = 0
     for repolist in glob.glob(f'{root}/etc/rupk/repos.d/*.tgz'):
         with tarfile.open(repolist, 'r:gz') as tg:
             tg.extractall(path=f'{root}/tmp/rupk/{repolist}/', filter=package.filtar)
@@ -70,7 +71,13 @@ def listall(root):
             with open(pkg, 'r') as pk:
                 version = pk.read()
                 version = version.strip()
-            print(f"{os.path.basename(repolist)}/{os.path.basename(pkg)}:{version}")
+                repo = os.path.basename(repolist).rsplit('.tgz', 1)
+                availablepkg += 1
+            print(f"{repo[0]} / {os.path.basename(pkg)}:{version}")
+    if availablepkg == 1:
+        print(f"{availablepkg} Package")
+    else:
+        print(f"{availablepkg} Packages")
 def download(root, name):
     try:
         doesexist = checknetpkg(root, name)

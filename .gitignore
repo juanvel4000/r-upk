@@ -2,3 +2,5 @@
 *.*
 !*.py
 dragon
+!.gitignore
+*.sh

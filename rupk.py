@@ -4,7 +4,8 @@ import package
 import dataread
 import os
 import remote
-version = "0.3"
+import shutil
+version = "0.4"
 architecture = "any"
 def checkroot():
     if not os.getuid() == 0:
@@ -30,6 +31,7 @@ def displayhelp():
     print(" update/u                         Update the repositories")
     print(" check/ch <package>               Check if a package exists in the repositories")
     print(" download/dl <package>            Download a package from a repository")
+    print(" list-net/ln                      List every package available to install")    
     print("")
     print("R-UPK Meta")
     print(" license/lc                       Show the MIT License")
@@ -191,6 +193,8 @@ def main():
     else:
         print("Invalid command. please view \"rupk help\" for usage.")
         sys.exit(1)
+    if os.path.isdir('/tmp/rupk'):
+        shutil.rmtree('/tmp/rupk/')
 
 if __name__ == "__main__":
     main()
