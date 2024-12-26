@@ -1,10 +1,11 @@
 import tarfile
 import os
 import dataread
+import shutil
 def create_package(workdir):
     try:
         if os.path.isdir(f'{workdir}/RUPK-OUTPUT'):
-            os.rmdir(f'{workdir}/RUPK-OUTPUT')
+            shutil.rmtree(f'{workdir}/RUPK-OUTPUT')
         cdir = os.getcwd()
         if not os.path.isdir(workdir):
             print("Error: the Working directory doesnt exist")
@@ -72,9 +73,7 @@ def create_package(workdir):
         with tarfile.open(f'{cdir}/{manifest['Name']}-{manifest['Version']}.rupk', 'w|xz') as txz:
             txz.add(f'{workdir}/RUPK-OUTPUT/data.tar.xz', arcname="data.txz")
             txz.add(f"{workdir}/RUPK-OUTPUT/info.tar.xz", arcname="info.txz")
-        os.remove(f'{workdir}/RUPK-OUTPUT/data.tar.xz')
-        os.remove(f'{workdir}/RUPK-OUTPUT/info.tar.xz')
-        os.rmdir(f'{workdir}/RUPK-OUTPUT')
+        shutil.rmtree(f"{workdir}/RUPK-OUTPUT")
         print(f"Successfully built {manifest['Name']}-{manifest['Version']}.rupk")
         os.chdir(cdir)
         return True
