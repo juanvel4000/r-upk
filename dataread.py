@@ -33,3 +33,23 @@ def add_entry(name, version, root="/"):
     with open(f'{root}/etc/rupk/packages.db', 'a') as db:
         db.write(f'{name}:{version}\n')
     return True
+def check_installed(name, root="/"):
+    if not os.path.isfile(f"{root}/etc/rupk/packages.db"):
+        print("The Package Database doesnt exist")
+        return False
+    with open(f"{root}/etc/rupk/packages.db", 'r') as db:
+        for line in db:
+            if line.startswith(name):
+                return name
+    return False
+def remove_entry(name, root="/"):
+    try:
+        with open(f'{root}/etc/rupk/packages.db', 'r') as file:
+            lines = file.readlines()
+        
+        with open(f'{root}/etc/rupk/packages.db', 'w') as file:
+            for line in lines:
+                if not line.startswith(name):
+                    file.write(line)
+    except Exception as e:
+        print(f"Error: {e}")

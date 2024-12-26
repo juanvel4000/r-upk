@@ -79,7 +79,7 @@ def create_package(workdir):
         return True
     except Exception as e:
         print(f"Error: {e}")
-def filtar(tarinfo):
+def filtar(tarinfo, other):
     return tarinfo
 def extract_package(outputdir, file):
     try:
