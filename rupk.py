@@ -30,9 +30,21 @@ def displayhelp():
     print(" update/u                         Update the repositories")
     print(" check/ch <package>               Check if a package exists in the repositories")
     print(" download/dl <package>            Download a package from a repository")
+    print("")
+    print("R-UPK Meta")
+    print(" license/lc                       Show the MIT License")
     print("This r-upk has fire throwing abilities")
 def check_directories():
-    
+    if not os.path.isfile('/etc/rupk/repos'):
+        print("Creating a repository file")
+        with open('/etc/rupk/repos', 'w') as db:
+            db.write(f'''
+        [List]\n
+        list = main\n
+        [main]\n
+        Server = https://juanvel4000.serv00.net/main\n            
+            
+            ''')
     if not os.path.isdir('/etc/rupk'):
         checkroot()
         os.makedirs('/etc/rupk')
@@ -55,10 +67,10 @@ def ascii():
                           / \  //\           
             |\___/|      /   \//  \\            
             /0  0  \__  /    //  | \ \    r-upk {version} ({architecture})
-           /     /  \/_/    //   |  \  \  
-           @_^_@'/   \/_   //    |   \   \ 
-           //_^_/     \/_ //     |    \    \
-        ( //) |        \///      |     \     \
+           /     /  \/_/    //   |  \  \  Copyright (c) 2024 juanvel400
+           @_^_@'/   \/_   //    |   \   \  Licensed under the MIT License
+           //_^_/     \/_ //     |    \    \ View "rupk license" for the license text
+        ( //) |        \///      |     \     \ 
       ( / /) _|_ /   )  //       |      \     _\
     ( // /) '/,_ _ _/  ( ; -.    |    _ _\.-~        .-~~~^-.
   (( / / )) ,-(        _      )`-.|.-~-.           .~         `.
@@ -123,6 +135,17 @@ def handle_dlin():
         print("Package not found")
         sys.exit(1)
     handle_install(package)
+def license():
+    print(r"""
+
+Copyright 2024 juanvel400
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+""")
 def main():
     check_directories()
     if len(sys.argv) < 2:
@@ -154,7 +177,9 @@ def main():
         "download": lambda: handle_download(),
         "dl": lambda: handle_download(),
         "install": lambda: handle_dlin(),
-        "i": lambda: handle_dlin()
+        "i": lambda: handle_dlin(),
+        "license": lambda: license(),
+        "lc": lambda: license()
     }
 
     if action in actions:
