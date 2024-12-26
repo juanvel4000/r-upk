@@ -6,26 +6,33 @@ import os
 
 version = "0.2"
 architecture = "any"
+def checkroot():
+    if not os.getuid() == 0:
+        print("Run r-upk as root")
+        sys.exit(1)
 def displayhelp():
     print(f"rupk {version}")
     print("Usage: rupk [options]")
     print("")
     print("Package installation and removal:")
-    print(" install <package file>          Install a package from a file")
-    print(" remove  <package name>          Uninstall a package from the system")
+    print(" install/i <package file>          Install a package from a file")
+    print(" remove/r  <package name>          Uninstall a package from the system")
     print(" ")
     print("Package Development and extraction:")
-    print(" build   <working directory>     Build a package from a working directory")
-    print(" extract <package file> (dir)    Extract a package, by default to /tmp/rupk")
+    print(" build/c   <working directory>     Build a package from a working directory")
+    print(" extract/x <package file> (dir)    Extract a package, by default to /tmp/rupk")
     print("")
     print("Package Meta:")
-    print(" list                            List the Available packages in the system")
+    print(" list/l                            List the Available packages in the system")
     print("")
     print("This r-upk has fire throwing abilities")
 def check_directories():
+    
     if not os.path.isdir('/etc/rupk'):
+        checkroot()
         os.makedirs('/etc/rupk')
     if not os.path.isdir('/var/rupk/Uninstall'):
+        checkroot()
         os.makedirs('/var/rupk/Uninstall')
 def display_packages():
     if not os.path.isfile('/etc/rupk/packages.db'):
@@ -60,12 +67,14 @@ def ascii():
     return dragon
 
 def handle_install(arg):
+    checkroot()
     if not os.path.isfile(arg):
         print(f"Could not install {arg}, file not found")
         sys.exit(1)
     install.InstallPackage(arg, "/")
 
 def handle_remove(arg):
+    checkroot()
     install.UninstallPackage(arg, "/")
 
 def handle_build():
@@ -75,6 +84,7 @@ def handle_build():
     package.create_package(sys.argv[2])
 
 def handle_extract():
+    checkroot()
     if len(sys.argv) < 3:
         print("Please provide a Package file to extract")
         sys.exit(1)
@@ -91,13 +101,20 @@ def main():
 
     actions = {
         "help": displayhelp,
+        "h": displayhelp,
         "install": lambda: [handle_install(arg) for arg in sys.argv[2:]],
+        "i": lambda: [handle_install(arg) for arg in sys.argv[2:]],
         "remove": lambda: [handle_remove(arg) for arg in sys.argv[2:]],
+        "r": lambda: [handle_remove(arg) for arg in sys.argv[2:]],
         "build": handle_build,
+        "c": handle_build,
         "extract": handle_extract,
+        "x": handle_extract,
         "fire": lambda: print(ascii()),
         "--version": lambda: print(f"r-upk {version} ({architecture})"),
-        "list": display_packages
+        "v": lambda: print(f"r-upk {version} ({architecture})"),
+        "list": display_packages,
+        "l": display_packages
     }
 
     if action in actions:

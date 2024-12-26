@@ -1,9 +1,5 @@
 #!/bin/sh
 set -e
-if ! command -v python &>/dev/null; then
-    echo "Please install python"
-    exit 1
-fi
 mkdir -p rupk-package/usr/lib/ rupk-package/RUPK rupk-package/usr/bin
 cat << EOF > rupk-package/usr/bin/rupk
 #!/bin/sh

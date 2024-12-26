@@ -13,19 +13,16 @@ R-UPK is a simple package manager written in Python, it has a similar syntax to 
 
 ## Installation
 
-R-UPK is not installable as of now, but you can test it
-
-### Testing
-Clone the repository
+You can create the R-UPK Package and install it
 
 ```bash
-  git clone https://github.com/juanvel4000/rupk
+  $ git clone https://github.com/juanvel4000/rupk
+  # sh create-rupk-package.sh
+  # python rupk.py install r-upk-0.2.rupk
+  $ rupk v
 
 ```
-Use python to run rupk.py    
-```bash
-    python rupk.py --version
-```
+
 
 ## Manifests
 A Package Manifest is named as `Manifest.ini`, when developing a package, this file goes in `(working directory)/RUPK`
