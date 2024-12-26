@@ -3,8 +3,8 @@ import install
 import package
 import dataread
 import os
-
-version = "0.2"
+import remote
+version = "0.3"
 architecture = "any"
 def checkroot():
     if not os.getuid() == 0:
@@ -15,7 +15,7 @@ def displayhelp():
     print("Usage: rupk [options]")
     print("")
     print("Package installation and removal:")
-    print(" install/i <package file>          Install a package from a file")
+    print(" local-install/li <package file>   Install a package from a file")
     print(" remove/r  <package name>          Uninstall a package from the system")
     print(" ")
     print("Package Development and extraction:")
@@ -25,6 +25,11 @@ def displayhelp():
     print("Package Meta:")
     print(" list/l                            List the Available packages in the system")
     print("")
+    print("Package networking:")
+    print(" install/i <package>              Install a package from a Repository")
+    print(" update/u                         Update the repositories")
+    print(" check/ch <package>               Check if a package exists in the repositories")
+    print(" download/dl <package>            Download a package from a repository")
     print("This r-upk has fire throwing abilities")
 def check_directories():
     
@@ -65,24 +70,20 @@ def ascii():
                                                                   /.-~
     """
     return dragon
-
 def handle_install(arg):
     checkroot()
     if not os.path.isfile(arg):
         print(f"Could not install {arg}, file not found")
         sys.exit(1)
     install.InstallPackage(arg, "/")
-
 def handle_remove(arg):
     checkroot()
     install.UninstallPackage(arg, "/")
-
 def handle_build():
     if len(sys.argv) < 3:
         print("Please provide a working directory")
         sys.exit(1)
     package.create_package(sys.argv[2])
-
 def handle_extract():
     checkroot()
     if len(sys.argv) < 3:
@@ -90,7 +91,38 @@ def handle_extract():
         sys.exit(1)
     directory = sys.argv[3] if len(sys.argv) > 3 else "/tmp/rupk"
     package.extract_package(directory, sys.argv[2])
-
+def handle_check():
+    checkroot()
+    if len(sys.argv) < 3:
+        print("Please provide a Package name to check")
+        sys.exit(1)
+    package = remote.checknetpkg('/', sys.argv[2])
+    if package == False:
+        print("Package not found")
+        sys.exit(1)
+    version = package['Version'].strip()
+    print(f"{package['Repository']}/{package['Name']}:{version}")
+    return f"{package['Repository']}/{package['Name']}:{version}"
+def handle_download():
+    checkroot()
+    if len(sys.argv) < 3:
+        print("Please provide a Package name to download")
+        sys.exit(1)
+    package = remote.download('/', sys.argv[2])
+    if package == False:
+        print("Package not found")
+        sys.exit(1)
+    print(f"Package downloaded to {package}")
+def handle_dlin():
+    checkroot()
+    if len(sys.argv) < 3:
+        print("Please provide a Package name to download")
+        sys.exit(1)
+    package = remote.download('/', sys.argv[2])
+    if package == False:
+        print("Package not found")
+        sys.exit(1)
+    handle_install(package)
 def main():
     check_directories()
     if len(sys.argv) < 2:
@@ -102,8 +134,8 @@ def main():
     actions = {
         "help": displayhelp,
         "h": displayhelp,
-        "install": lambda: [handle_install(arg) for arg in sys.argv[2:]],
-        "i": lambda: [handle_install(arg) for arg in sys.argv[2:]],
+        "local-install": lambda: [handle_install(arg) for arg in sys.argv[2:]],
+        "li": lambda: [handle_install(arg) for arg in sys.argv[2:]],
         "remove": lambda: [handle_remove(arg) for arg in sys.argv[2:]],
         "r": lambda: [handle_remove(arg) for arg in sys.argv[2:]],
         "build": handle_build,
@@ -113,8 +145,16 @@ def main():
         "fire": lambda: print(ascii()),
         "--version": lambda: print(f"r-upk {version} ({architecture})"),
         "v": lambda: print(f"r-upk {version} ({architecture})"),
-        "list": display_packages,
-        "l": display_packages
+        "list": lambda: display_packages,
+        "l": lambda: display_packages,
+        "update": lambda: remote.updaterepos('/'),
+        "u": lambda: remote.updaterepos('/'),
+        "check": lambda: handle_check(),
+        "ch": lambda: handle_check(),
+        "download": lambda: handle_download(),
+        "dl": lambda: handle_download(),
+        "install": lambda: handle_dlin(),
+        "i": lambda: handle_dlin()
     }
 
     if action in actions:

@@ -2,6 +2,17 @@ import tarfile
 import os
 import dataread
 import shutil
+import hashlib
+
+def compute_sha256(file_path, save=True):
+    sha256_hash = hashlib.sha256()  
+    with open(file_path, "rb") as f:  
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block) 
+    if save == True:
+        with open(f'{file_path}.sha256', 'w') as shum:
+            shum.write(sha256_hash.hexdigest())
+    return sha256_hash.hexdigest()
 def create_package(workdir):
     try:
         if os.path.isdir(f'{workdir}/RUPK-OUTPUT'):
@@ -75,6 +86,7 @@ def create_package(workdir):
             txz.add(f"{workdir}/RUPK-OUTPUT/info.tar.xz", arcname="info.txz")
         shutil.rmtree(f"{workdir}/RUPK-OUTPUT")
         print(f"Successfully built {manifest['Name']}-{manifest['Version']}.rupk")
+        compute_sha256(f'{cdir}/{manifest['Name']}-{manifest['Version']}.rupk', True)
         os.chdir(cdir)
         return True
     except Exception as e:

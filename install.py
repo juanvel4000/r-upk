@@ -2,6 +2,7 @@ import shutil
 import os
 import dataread
 import package
+import hashlib
 def InstallPackage(file=None, root="/"):
     try:
         if file is None:
@@ -19,7 +20,17 @@ def InstallPackage(file=None, root="/"):
         if not os.path.isfile(file):
             print(f"This is not a R-UPK Package or it doesn't exist")
             return False
-        
+        if os.path.isfile(f'{file}.sha256'):
+            expected = package.compute_sha256(f'{file}')
+            with open(f'{file}.sha256', 'r') as shum:
+                summ = shum.read().strip()
+            if summ == expected:
+                print("The sums match")
+            else:
+                print("The sums don't match")
+                return False
+        else:
+            print("This package could be insecure. Proceeding without SHA256 verification.")
         file = os.path.abspath(file)
         root = os.path.abspath(root)
         
