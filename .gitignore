@@ -1,4 +1,4 @@
 */
-*.rupk
+*.*
+!*.py
 dragon
-*.sha256
