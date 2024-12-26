@@ -88,6 +88,7 @@ def create_package(workdir):
         print(f"Successfully built {manifest['Name']}-{manifest['Version']}.rupk")
         compute_sha256(f'{cdir}/{manifest['Name']}-{manifest['Version']}.rupk', True)
         os.chdir(cdir)
+        os.remove(f'{workdir}/RUPK/tree')
         return True
     except Exception as e:
         print(f"Error: {e}")
