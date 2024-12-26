@@ -23,3 +23,4 @@ Server = https://juanvel4000.serv00.net/main
 EOF
 cp rupk.py remote.py install.py dataread.py package.py rupk-package/usr/lib/
 python rupk.py build rupk-package
+mv rupk*.rupk repository

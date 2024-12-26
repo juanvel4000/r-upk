@@ -60,7 +60,17 @@ def checknetpkg(root, name):
     except Exception as e:
         print(f"Error: {e}")
         return False
-
+def listall(root):
+    if not os.path.isdir(f'{root}/etc/rupk/repos.d/'):
+        updaterepos(root)
+    for repolist in glob.glob(f'{root}/etc/rupk/repos.d/*.tgz'):
+        with tarfile.open(repolist, 'r:gz') as tg:
+            tg.extractall(path=f'{root}/tmp/rupk/{repolist}/', filter=package.filtar)
+        for pkg in glob.glob(f'{root}/tmp/rupk/{repolist}/*'):
+            with open(pkg, 'r') as pk:
+                version = pk.read()
+                version = version.strip()
+            print(f"{os.path.basename(repolist)}/{os.path.basename(pkg)}:{version}")
 def download(root, name):
     try:
         doesexist = checknetpkg(root, name)
