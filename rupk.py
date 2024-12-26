@@ -16,25 +16,26 @@ def displayhelp():
     print("Usage: rupk [options]")
     print("")
     print("Package installation and removal:")
-    print(" local-install/li <package file>   Install a package from a file")
-    print(" remove/r  <package name>          Uninstall a package from the system")
+    print("  local-install/li <package file>   Install a package from a file")
+    print("  remove/r  <package name>          Uninstall a package from the system")
     print(" ")
     print("Package Development and extraction:")
-    print(" build/c   <working directory>     Build a package from a working directory")
-    print(" extract/x <package file> (dir)    Extract a package, by default to /tmp/rupk")
+    print("  build/c   <working directory>     Build a package from a working directory")
+    print("  extract/x <package file> (dir)    Extract a package, by default to /tmp/rupk")
     print("")
     print("Package Meta:")
-    print(" list/l                            List the Available packages in the system")
+    print("  list/l                            List the Available packages in the system")
     print("")
     print("Package networking:")
-    print(" install/i <package>              Install a package from a Repository")
-    print(" update/u                         Update the repositories")
-    print(" check/ch <package>               Check if a package exists in the repositories")
-    print(" download/dl <package>            Download a package from a repository")
-    print(" list-net/ln                      List every package available to install")    
+    print("  install/i <package>               Install a package from a Repository")
+    print("  update/u                          Update the repositories")
+    print("  check/ch <package>                Check if a package exists in the repositories")
+    print("  download/dl <package>             Download a package from a repository")
+    print("  list-net/ln                       List every package available to install")    
     print("")
     print("R-UPK Meta")
-    print(" license/lc                       Show the MIT License")
+    print("  license/lc                        Show the MIT License")
+    print("  help/h                            This help message")
     print("This r-upk has fire throwing abilities")
 def check_directories():
     if not os.path.isfile('/etc/rupk/repos'):
@@ -60,8 +61,9 @@ def display_packages():
     with open('/etc/rupk/packages.db', 'r') as db:
         lines = db.readlines()
         for line in lines:
+            line = line.strip()
             line = line.split(':')
-            print(f"{line[0]}   {line[1]}")
+            print(f"{line[0]}    {line[1]}")
     return True
 def ascii():
     dragon = rf"""
@@ -136,6 +138,7 @@ def handle_dlin():
     if package == False:
         print("Package not found")
         sys.exit(1)
+    dependencies = remote.finddepends('/', package, alsoinstall=True)
     handle_install(package)
 def license():
     print(r"""
@@ -172,8 +175,8 @@ def main():
         "fire": lambda: print(ascii()),
         "--version": lambda: print(f"r-upk {version} ({architecture})"),
         "v": lambda: print(f"r-upk {version} ({architecture})"),
-        "list": lambda: display_packages,
-        "l": lambda: display_packages,
+        "list": lambda: display_packages(),
+        "l": lambda: display_packages(),
         "update": lambda: remote.updaterepos('/'),
         "u": lambda: remote.updaterepos('/'),
         "check": lambda: handle_check(),

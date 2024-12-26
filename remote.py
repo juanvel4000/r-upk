@@ -5,7 +5,8 @@ from configparser import ConfigParser
 import tarfile
 import glob
 import package 
-
+import install
+import dataread
 def updaterepos(root):
     try:
         config = ConfigParser()
@@ -103,6 +104,42 @@ def download(root, name):
         except Exception as e:
                     print(f"Error downloading {doesexist['Name']}: {e}")
                     return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+def finddepends(root, file, alsoinstall=True, processed_dependencies=None):
+    try:
+        if processed_dependencies is None:
+            processed_dependencies = set()
+
+        if not os.path.isdir(f'{root}/tmp/rupk/extract'):
+            os.makedirs(f'{root}/tmp/rupk/extract')
+
+        if not os.path.isfile(os.path.abspath(file)):
+            print(f"Could not find {file}")
+            return False
+        package.extract_package(f'{root}/tmp/rupk/extract', file)
+
+        manifest = dataread.parsemanifest(f"{root}/tmp/rupk/extract/RUPK/Manifest.ini")
+
+        if not manifest.get('Dependencies'):
+            return True
+
+        dependencies = manifest['Dependencies'].split(' ')
+        for dependency in dependencies:
+            if dependency in processed_dependencies:
+                continue  
+            processed_dependencies.add(dependency)
+
+            download(root, dependency)
+
+            if alsoinstall:
+                install.InstallPackage(f'{root}/tmp/rupk/downloads/{dependency}.rupk', root)
+
+            finddepends(root, f'{root}/tmp/rupk/downloads/{dependency}.rupk', alsoinstall, processed_dependencies)
+
+        return True
+
     except Exception as e:
         print(f"Error: {e}")
         return False

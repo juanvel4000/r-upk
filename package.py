@@ -13,7 +13,7 @@ def compute_sha256(file_path, save=True):
         with open(f'{file_path}.sha256', 'w') as shum:
             shum.write(sha256_hash.hexdigest())
     return sha256_hash.hexdigest()
-def create_package(workdir):
+def create_package(workdir, debug=True):
     try:
         if os.path.isdir(f'{workdir}/RUPK-OUTPUT'):
             shutil.rmtree(f'{workdir}/RUPK-OUTPUT')
@@ -80,6 +80,8 @@ def create_package(workdir):
                         if full_path.startswith(workdir):
                             full_path = full_path[len(workdir):]  
                         txz.add(f'{workdir}/{full_path}', arcname=full_path)
+                        if debug == True:
+                            print(f"{full_path}")
         os.chdir(f'{workdir}/RUPK-OUTPUT')
         with tarfile.open(f'{cdir}/{manifest['Name']}-{manifest['Version']}.rupk', 'w|xz') as txz:
             txz.add(f'{workdir}/RUPK-OUTPUT/data.tar.xz', arcname="data.txz")
