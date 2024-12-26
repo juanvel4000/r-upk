@@ -2,10 +2,8 @@ import shutil
 import os
 import dataread
 import package
-
 def InstallPackage(file=None, root="/"):
     try:
-
         if file is None:
             print("Error: No file provided.")
             return False
@@ -30,13 +28,22 @@ def InstallPackage(file=None, root="/"):
 
         package.extract_package(f'{root}/tmp/rupk/', file)
         manifest = dataread.parsemanifest(f'{root}/tmp/rupk/RUPK/Manifest.ini')
+
+        if manifest.get('PreInstall'):
+            preinstall_command = f"/tmp/rupk/RUPK/{manifest['PreInstall']}"
+            if root != "/":
+                os.system(f'chroot {root} {preinstall_command}')
+            else:
+                os.system(preinstall_command)
+
         if dataread.check_installed(manifest['Name'], root) == manifest['Name']:
             print("Package is already installed.")
-            if os.path.isdir('{root}/tmp/upk'):
+            if os.path.isdir(f'{root}/tmp/upk'):
                 print("Cleaning up...")
                 shutil.rmtree(f'{root}/tmp/upk/')
                 
             return False
+
         tmp_dir = f"{root}/tmp/rupk"
         for dirpath, dirs, files in os.walk(tmp_dir):
             if 'RUPK' in dirs:
@@ -51,13 +58,22 @@ def InstallPackage(file=None, root="/"):
                     shutil.copy2(src_file, dest_file)
                 else:
                     print(f"Skipping {dest_file}, file already exists.")
-        
+
+        if manifest.get('Uninstall'):
+            shutil.copy(f"{root}/tmp/rupk/RUPK/{manifest['Uninstall']}", f"{root}/var/rupk/Uninstall/{manifest['Name']}.unf")
+             
         os.chdir(cdir)
         shutil.copy(f"{root}/tmp/rupk/RUPK/tree", f"{root}/var/rupk/{manifest['Name']}.index")
         shutil.rmtree(f'{root}/tmp/rupk/')
-        
 
-        if manifest is not False:
+        if manifest.get('PostInstall'):
+            postinstall_command = f"/tmp/rupk/RUPK/{manifest['PostInstall']}"
+            if root != "/":
+                os.system(f'chroot {root} {postinstall_command}')
+            else:
+                os.system(postinstall_command)
+
+        if manifest:
             dataread.add_entry(manifest['Name'], manifest['Version'], root)
             print("Package installation completed successfully.")
             return True
@@ -74,11 +90,24 @@ def UninstallPackage(name, root="/"):
         return False
     if not os.path.isfile(f'{root}/var/rupk/{name}.index'):
         print("Could not find the Index file for this package")
+
+    if os.path.isfile(f'{root}/var/rupk/Uninstall/{name}.unf'):
+        uninstall_command = f"/var/rupk/Uninstall/{name}.unf"
+        if root != "/":
+            os.system(f'chroot {root} {uninstall_command}')
+        else:
+            os.system(uninstall_command)
+
     with open(f'{root}/var/rupk/{name}.index', 'r') as db:
         lines = db.readlines()
         for line in lines:
-            line = line.strip()
-            os.remove(f'{root}/{line}') 
-        dataread.remove_entry(name, root)
+            line = line.strip() 
+            file_path = f'{root}/{line}'
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            else:
+                print(f"Warning: {file_path} does not exist")
+
+    dataread.remove_entry(name, root)
     os.remove(f'{root}/var/rupk/{name}.index')
     print("Removed.")
