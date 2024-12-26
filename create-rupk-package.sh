@@ -14,7 +14,7 @@ chmod +x rupk-package/usr/bin/rupk
 cat << EOF > rupk-package/RUPK/Manifest.ini
 [Package]
 Name = r-upk
-Version = 0.1
+Version = 0.2
 Maintainer = juanvel400 <juanvel400@proton.me>
 Summary = The Rewritten-UPK Package Manager.
 EOF

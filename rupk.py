@@ -4,7 +4,7 @@ import package
 import dataread
 import os
 
-version = "0.1"
+version = "0.2"
 architecture = "any"
 def displayhelp():
     print(f"rupk {version}")
