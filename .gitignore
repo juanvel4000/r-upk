@@ -1,6 +1,6 @@
 */
-*.*
-!*.py
-dragon
-!.gitignore
 *.sh
+!*.py
+*.rupk
+*.sha256
+dragon
