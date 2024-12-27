@@ -5,7 +5,7 @@ import dataread
 import os
 import remote
 import shutil
-version = "0.4.1"
+version = "0.4.2"
 architecture = "any"
 def checkroot():
     if not os.getuid() == 0:
@@ -44,6 +44,7 @@ def check_directories():
         checkroot()
         os.makedirs('/etc/rupk')
     if not os.path.isfile('/etc/rupk/repos'):
+        checkroot()
         print("Creating a repository file")
         with open('/etc/rupk/repos', 'w') as db:
             db.write(f'''
@@ -220,7 +221,7 @@ def main():
     if action in actions:
         actions[action]()
     else:
-        print("Invalid command. please view \"rupk help\" for usage.")
+        print(f"Invalid command: {action}. please view \"rupk help\" for usage.")
         sys.exit(1)
     if os.path.isdir('/tmp/rupk'):
         shutil.rmtree('/tmp/rupk/')

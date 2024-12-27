@@ -90,7 +90,11 @@ def InstallPackage(file=None, root="/", replace=False):
                 os.system(postinstall_command)
 
         if manifest:
-            dataread.add_entry(manifest['Name'], manifest['Version'], root)
+            if replace == False:
+                dataread.add_entry(manifest['Name'], manifest['Version'], root)
+            else:
+                dataread.remove_entry(manifest['Name'], root)
+                dataread.add_entry(manifest['Name'], manifest['Version'], root)
             print("Package installation completed successfully.")
             return True
         else:

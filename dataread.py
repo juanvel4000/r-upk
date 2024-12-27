@@ -30,8 +30,22 @@ def parsemanifest(file):
 def add_entry(name, version, root="/"):
     if not os.path.isdir(f'{root}/etc/rupk'):
         os.makedirs(f'{root}/etc/rupk')
-    with open(f'{root}/etc/rupk/packages.db', 'a') as db:
+    
+    db_path = f'{root}/etc/rupk/packages.db'
+    
+    if not os.path.exists(db_path):
+        with open(db_path, 'w') as db:
+            db.write("")  
+
+    with open(db_path, 'r+') as db:
+        lines = db.readlines()
+        for line in lines:
+            if line.startswith(name):
+                print("Not adding new entry")
+                return False
+
         db.write(f'{name}:{version}\n')
+
     return True
 def check_installed(name, root="/"):
     if not os.path.isfile(f"{root}/etc/rupk/packages.db"):
