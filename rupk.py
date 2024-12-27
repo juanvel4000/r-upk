@@ -38,6 +38,9 @@ def displayhelp():
     print("  help/h                            This help message")
     print("This r-upk has fire throwing abilities")
 def check_directories():
+    if not os.path.isdir('/etc/rupk'):
+        checkroot()
+        os.makedirs('/etc/rupk')
     if not os.path.isfile('/etc/rupk/repos'):
         print("Creating a repository file")
         with open('/etc/rupk/repos', 'w') as db:
@@ -48,9 +51,6 @@ def check_directories():
         Server = https://juanvel4000.serv00.net/main\n            
             
             ''')
-    if not os.path.isdir('/etc/rupk'):
-        checkroot()
-        os.makedirs('/etc/rupk')
     if not os.path.isdir('/var/rupk/Uninstall'):
         checkroot()
         os.makedirs('/var/rupk/Uninstall')
