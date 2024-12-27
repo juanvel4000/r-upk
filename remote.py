@@ -97,10 +97,17 @@ def download(root, name):
                             if response.status == 200:
                                 with open(f'{root}/tmp/rupk/downloads/{doesexist['Name']}.rupk', 'wb') as file:
                                     file.write(response.read())
-                                return f'{root}/tmp/rupk/downloads/{doesexist['Name']}.rupk'
                             else:
                                 print(f"Could not download {doesexist['Name']}. HTTP Status: {response.status}")
                                 return False
+            with urllib.request.urlopen(f'{server}/{doesexist['Name']}-{version}.rupk.sha256') as sharesp:
+                if sharesp.status == 200:
+                    with open(f'{root}/tmp/rupk/downloads/{doesexist['Name']}.rupk.sha256', 'wb') as sha2:
+                        sha2.write(response.read())
+                        return f'{root}/tmp/rupk/downloads/{doesexist['Name']}.rupk'
+                else:
+                    return f'{root}/tmp/rupk/downloads/{doesexist['Name']}.rupk'
+
         except Exception as e:
                     print(f"Error downloading {doesexist['Name']}: {e}")
                     return False
