@@ -83,7 +83,7 @@ The scripts for `PreInstall`, `PostInstall` and `Uninstall` (if exist) Must be i
 ## License
 **R-UPK** is licensed with the **MIT** License
 
-Please view **LICENSE**
+Please view **LICENSE** or `rupk lc`
 
 
 ```ascii

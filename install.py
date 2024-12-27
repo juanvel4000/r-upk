@@ -3,7 +3,7 @@ import os
 import dataread
 import package
 import hashlib
-def InstallPackage(file=None, root="/"):
+def InstallPackage(file=None, root="/", replace=False):
     try:
         if file is None:
             print("Error: No file provided.")
@@ -46,15 +46,16 @@ def InstallPackage(file=None, root="/"):
                 os.system(f'chroot {root} {preinstall_command}')
             else:
                 os.system(preinstall_command)
-
-        if dataread.check_installed(manifest['Name'], root) == manifest['Name']:
-            print("Package is already installed.")
-            if os.path.isdir(f'{root}/tmp/upk'):
-                print("Cleaning up...")
-                shutil.rmtree(f'{root}/tmp/upk/')
-                
-            return False
-
+        if replace == False:
+            if dataread.check_installed(manifest['Name'], root) == manifest['Name']:
+                print("Package is already installed.")
+                if os.path.isdir(f'{root}/tmp/upk'):
+                    print("Cleaning up...")
+                    shutil.rmtree(f'{root}/tmp/upk/')
+                    
+                return False
+        else:
+            print("Reinstall mode is enabled, continuing")
         tmp_dir = f"{root}/tmp/rupk"
         for dirpath, dirs, files in os.walk(tmp_dir):
             if 'RUPK' in dirs:
@@ -63,12 +64,16 @@ def InstallPackage(file=None, root="/"):
             for dataf in files:
                 src_file = os.path.join(dirpath, dataf)
                 dest_file = os.path.join(root, os.path.relpath(src_file, tmp_dir))
-
+    
                 if not os.path.exists(dest_file):
                     os.makedirs(os.path.dirname(dest_file), exist_ok=True)
                     shutil.copy2(src_file, dest_file)
                 else:
-                    print(f"Skipping {dest_file}, file already exists.")
+                    if replace == True:
+                        os.makedirs(os.path.dirname(dest_file), exist_ok=True)
+                        shutil.copy2(src_file, dest_file)        
+                    else:
+                        print(f"Skipping {dest_file}, file already exists.")
 
         if manifest.get('Uninstall'):
             shutil.copy(f"{root}/tmp/rupk/RUPK/{manifest['Uninstall']}", f"{root}/var/rupk/Uninstall/{manifest['Name']}.unf")

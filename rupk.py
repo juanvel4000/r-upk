@@ -5,7 +5,7 @@ import dataread
 import os
 import remote
 import shutil
-version = "0.4"
+version = "0.4.1"
 architecture = "any"
 def checkroot():
     if not os.getuid() == 0:
@@ -17,6 +17,7 @@ def displayhelp():
     print("")
     print("Package installation and removal:")
     print("  local-install/li <package file>   Install a package from a file")
+    print("  local-reinstall/lri <package file>Reinstall a package from a file")
     print("  remove/r  <package name>          Uninstall a package from the system")
     print(" ")
     print("Package Development and extraction:")
@@ -31,7 +32,8 @@ def displayhelp():
     print("  update/u                          Update the repositories")
     print("  check/ch <package>                Check if a package exists in the repositories")
     print("  download/dl <package>             Download a package from a repository")
-    print("  list-net/ln                       List every package available to install")    
+    print("  list-net/ln                       List every package available to install")
+    print("  reinstall/ri <package>            Reinstall a package from a Repository")
     print("")
     print("R-UPK Meta")
     print("  license/lc                        Show the MIT License")
@@ -92,6 +94,12 @@ def handle_install(arg):
         print(f"Could not install {arg}, file not found")
         sys.exit(1)
     install.InstallPackage(arg, "/")
+def handle_reinstall(arg):
+    checkroot()
+    if not os.path.isfile(arg):
+        print(f"Could not reinstall {arg}, file not found")
+        sys.exit(1)
+    install.InstallPackage(arg, "/", True)
 def handle_remove(arg):
     checkroot()
     install.UninstallPackage(arg, "/")
@@ -140,6 +148,17 @@ def handle_dlin():
         sys.exit(1)
     dependencies = remote.finddepends('/', package, alsoinstall=True)
     handle_install(package)
+def handle_rdlin():
+    checkroot()
+    if len(sys.argv) < 3:
+        print("Please provide a Package name to download")
+        sys.exit(1)
+    package = remote.download('/', sys.argv[2])
+    if package == False:
+        print("Package not found")
+        sys.exit(1)
+    dependencies = remote.finddepends('/', package, alsoinstall=True)
+    handle_reinstall(package)
 def license():
     print(r"""
 
@@ -153,6 +172,9 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 """)
 def listnetpkg():
     remote.listall('/')
+def handle_update():
+    checkroot()
+    remote.updaterepos('/')
 def main():
     check_directories()
     if len(sys.argv) < 2:
@@ -177,8 +199,8 @@ def main():
         "v": lambda: print(f"r-upk {version} ({architecture})"),
         "list": lambda: display_packages(),
         "l": lambda: display_packages(),
-        "update": lambda: remote.updaterepos('/'),
-        "u": lambda: remote.updaterepos('/'),
+        "update": lambda: handle_update(),
+        "u": lambda: handle_update(),
         "check": lambda: handle_check(),
         "ch": lambda: handle_check(),
         "download": lambda: handle_download(),
@@ -188,7 +210,11 @@ def main():
         "license": lambda: license(),
         "lc": lambda: license(),
         "list-net": lambda: listnetpkg(),
-        "ln": lambda: listnetpkg()
+        "ln": lambda: listnetpkg(),
+        "local-reinstall": lambda: [handle_reinstall(arg) for arg in sys.argv[2:]],
+        "reinstall": lambda: handle_rdlin(),
+        "ri": lambda: handle_rdlin(),
+        "lri": lambda: [handle_reinstall(arg) for arg in sys.argv[2:]]
     }
 
     if action in actions:
