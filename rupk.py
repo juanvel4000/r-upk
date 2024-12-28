@@ -14,30 +14,31 @@ def checkroot():
 def displayhelp():
     print(f"rupk {version}")
     print("Usage: rupk [options]")
-    print("")
+    print(" ")
+    print("Package networking:")
+    print("  i <pkg>                     Install a package from a Repository")
+    print("  u                           Update the repositories")
+    print("  ch <pkg>                    Check if a package exists in the repositories")
+    print("  dl <pkg>                    Download a package from a repository")
+    print("  ln                          List every package available to install")
+    print("  ri <pkg>                    Reinstall a package from a Repository")
+    print(" ")
     print("Package installation and removal:")
-    print("  local-install/li <package file>   Install a package from a file")
-    print("  local-reinstall/lri <package file>Reinstall a package from a file")
-    print("  remove/r  <package name>          Uninstall a package from the system")
+    print("  li <pkg file>               Install a package from a file")
+    print("  lri <pkg file>              Reinstall a package from a file")
+    print("  r   <pkg name>              Uninstall a package from the system")
     print(" ")
     print("Package Development and extraction:")
-    print("  build/c   <working directory>     Build a package from a working directory")
-    print("  extract/x <package file> (dir)    Extract a package, by default to /tmp/rupk")
-    print("")
+    print("  c <workdir>                 Build a package from a working directory")
+    print("  x <pkg file> (dir)          Extract a package, by default to /tmp/rupk")
+    print(" ")
     print("Package Meta:")
-    print("  list/l                            List the Available packages in the system")
-    print("")
-    print("Package networking:")
-    print("  install/i <package>               Install a package from a Repository")
-    print("  update/u                          Update the repositories")
-    print("  check/ch <package>                Check if a package exists in the repositories")
-    print("  download/dl <package>             Download a package from a repository")
-    print("  list-net/ln                       List every package available to install")
-    print("  reinstall/ri <package>            Reinstall a package from a Repository")
-    print("")
+    print("  l                            List the Available packages in the system")
+    print(" ")
     print("R-UPK Meta")
-    print("  license/lc                        Show the MIT License")
-    print("  help/h                            This help message")
+    print("  lc                           Show the MIT License")
+    print("  h                            This help message")
+    print("  v                            Show the r-upk version")
     print("This r-upk has fire throwing abilities")
 def check_directories():
     if not os.path.isdir('/etc/rupk'):
@@ -187,33 +188,19 @@ def main():
     actions = {
         "help": displayhelp,
         "h": displayhelp,
-        "local-install": lambda: [handle_install(arg) for arg in sys.argv[2:]],
         "li": lambda: [handle_install(arg) for arg in sys.argv[2:]],
-        "remove": lambda: [handle_remove(arg) for arg in sys.argv[2:]],
         "r": lambda: [handle_remove(arg) for arg in sys.argv[2:]],
-        "build": handle_build,
         "c": handle_build,
-        "extract": handle_extract,
         "x": handle_extract,
         "fire": lambda: print(ascii()),
-        "--version": lambda: print(f"r-upk {version} ({architecture})"),
         "v": lambda: print(f"r-upk {version} ({architecture})"),
-        "list": lambda: display_packages(),
         "l": lambda: display_packages(),
-        "update": lambda: handle_update(),
         "u": lambda: handle_update(),
-        "check": lambda: handle_check(),
         "ch": lambda: handle_check(),
-        "download": lambda: handle_download(),
         "dl": lambda: handle_download(),
-        "install": lambda: handle_dlin(),
         "i": lambda: handle_dlin(),
-        "license": lambda: license(),
         "lc": lambda: license(),
-        "list-net": lambda: listnetpkg(),
         "ln": lambda: listnetpkg(),
-        "local-reinstall": lambda: [handle_reinstall(arg) for arg in sys.argv[2:]],
-        "reinstall": lambda: handle_rdlin(),
         "ri": lambda: handle_rdlin(),
         "lri": lambda: [handle_reinstall(arg) for arg in sys.argv[2:]]
     }
