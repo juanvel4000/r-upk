@@ -16,7 +16,7 @@ R-UPK is a simple package manager written in Python, it has a similar syntax to 
 You can update **R-UPK** if you have the [main repository](https://juanvel4000.serv00.net/main) enabled, run these commands to update **R-UPK**
 
 ```plaintext
-sudo rupk u &amp;&amp; sudo rupk ri rupk
+sudo rupk u && sudo rupk ri rupk
 ```
 
 ### Bootstrapper
