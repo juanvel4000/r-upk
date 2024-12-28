@@ -1,6 +1,6 @@
 ## R-UPK
 
-R-UPK is a simple package manager written in Python, it has a similar syntax to **well-known package managers**
+R-UPK is a simple package manager written in Python, it has a letter-long syntax (**or 3-letter long syntax**) which is easy to **learn** and _understand_
 
 ## Features
 
@@ -98,7 +98,7 @@ Name = MyPackage
 Version = 1.0.0
 Maintainer = John Doe <johndoe@example.com>
 Summary = A short description of the package.
-Dependencies = lib1 &gt;= 1.2.3, lib2 &gt;= 4.5.6
+Dependencies = libfoo libfoobar libbar bar foo
 Section = utils
 PreInstall = preinstall.sh
 PostInstall = postinstall.sh
