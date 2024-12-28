@@ -44,7 +44,7 @@ rupk v
   $ mkdir myrepository
   # Dont copy the packages
   $ touch package_name # For each package, create a file with the package name
-  $ echo "1.0.0" &gt;&gt; package_name # Put the package version
+  $ echo "1.0.0" && package_name # Put the package version
   $ tar -czvf myrepository.tar.gz *
   # Upload myrepository.tar.gz and all the packages to the same directory in a server
   # Add a new entry to your /etc/rupk/repos
